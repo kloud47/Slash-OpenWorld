@@ -7,6 +7,15 @@ enum class ECharacterGate : uint8
 	ECG_Jogging UMETA(DisplayName = "Jogging"),
 };
 
+UENUM(BlueprintType)
+enum class ELocomotionDirection : uint8
+{
+	ELD_Forward UMETA(DisplayName = "Forward"),
+	ELD_Backward UMETA(DisplayName = "Backward"),
+	ELD_Left UMETA(DisplayName = "Left"),
+	ELD_Right UMETA(DisplayName = "Right"),
+};
+
 
 UENUM(BlueprintType)
 enum class ECharacterState : uint8

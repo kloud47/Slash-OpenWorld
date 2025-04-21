@@ -11,12 +11,12 @@ AMainCharacter::AMainCharacter()
 	PrimaryActorTick.bCanEverTick = false;
 
 	bUseControllerRotationPitch = false;
-	bUseControllerRotationYaw = false;
+	bUseControllerRotationYaw = true;
 	bUseControllerRotationRoll = false;
 
 	CurrentGate = ECharacterGate::ECG_Jogging;
 
-	GetCharacterMovement()->bOrientRotationToMovement = true;
+	GetCharacterMovement()->bOrientRotationToMovement = false;
 
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>("CameraBoom");
 	CameraBoom->SetupAttachment(GetRootComponent());
@@ -72,6 +72,8 @@ void AMainCharacter::Look(const FInputActionValue& Value)
 void AMainCharacter::BlockStart(const FInputActionValue& Value)
 {
 	CurrentGate = ECharacterGate::ECG_Walking;
+	UE_LOG(LogTemp, Display, TEXT("Walking"));
+	GetCurrentGate(ECharacterGate::ECG_Walking);
 	GetCharacterMovement()->MaxWalkSpeed = GateSettings[ECharacterGate::ECG_Walking].MaxWalkSpeed;
 	GetCharacterMovement()->MaxAcceleration = GateSettings[ECharacterGate::ECG_Walking].MaxAcceleration;
 	GetCharacterMovement()->BrakingDecelerationWalking = GateSettings[ECharacterGate::ECG_Walking].BrakingDeceleration;
@@ -83,6 +85,8 @@ void AMainCharacter::BlockStart(const FInputActionValue& Value)
 void AMainCharacter::BlockEnd(const FInputActionValue& Value)
 {
 	CurrentGate = ECharacterGate::ECG_Jogging;
+	UE_LOG(LogTemp, Display, TEXT("Jogging"));
+	GetCurrentGate(ECharacterGate::ECG_Jogging);
 	GetCharacterMovement()->MaxWalkSpeed = GateSettings[ECharacterGate::ECG_Jogging].MaxWalkSpeed;
 	GetCharacterMovement()->MaxAcceleration = GateSettings[ECharacterGate::ECG_Jogging].MaxAcceleration;
 	GetCharacterMovement()->BrakingDecelerationWalking = GateSettings[ECharacterGate::ECG_Jogging].BrakingDeceleration;
