@@ -62,7 +62,7 @@ void ASlashCharacter::Move(const FInputActionValue& Value)
 	const FRotator Rotation = Controller->GetControlRotation();
 	const FRotator YawRotation(0.f, Rotation.Yaw, 0.f);
 
-	if (!this->GetCharacterMovement()->IsFalling() && CharaState != ECharacterState::ESC_Rolling)
+	if (!this->GetCharacterMovement()->IsFalling() && CharaState != ECharacterState::ECS_Rolling)
 	{
 		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);// We get the forward vector;
 		AddMovementInput(ForwardDirection, MovementVector.Y);
@@ -143,7 +143,7 @@ void ASlashCharacter::Roll(const FInputActionValue& Value)
 	const FVector Velocity = GetCharacterMovement()->GetLastUpdateVelocity();
 	float VelocityLength = Velocity.Size();
 	ECharacterState temp = CharaState;
-	CharaState = ECharacterState::ESC_Rolling;
+	CharaState = ECharacterState::ECS_Rolling;
 	if (VelocityLength > 1.f)
 	{
 		FRotator lastMovementRotation = GetLastMovementInputVector().Rotation();

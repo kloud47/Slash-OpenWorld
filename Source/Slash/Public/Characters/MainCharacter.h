@@ -2,8 +2,15 @@
 
 #include "CoreMinimal.h"
 #include "BaseCharacter.h"
+#include "CharacterData.h"
+#include "CharacterTypes.h"
 #include "GameFramework/Character.h"
 #include "MainCharacter.generated.h"
+
+class UInputAction;
+class USpringArmComponent;
+class UCameraComponent;
+class UInputMappingContext;
 
 UCLASS()
 class SLASH_API AMainCharacter : public ABaseCharacter
@@ -12,13 +19,42 @@ class SLASH_API AMainCharacter : public ABaseCharacter
 
 public:
 	AMainCharacter();
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 protected:
 	virtual void BeginPlay() override;
 
-public:	
-	virtual void Tick(float DeltaTime) override;
+	UPROPERTY(EditAnywhere, Category="Input")
+	TObjectPtr<UInputMappingContext> MainCharaMappingContext;
 
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	UPROPERTY(EditAnywhere, Category="Input")
+	TObjectPtr<UInputAction> MoveAction;
 
+	UPROPERTY(EditAnywhere, Category="Input")
+	TObjectPtr<UInputAction> LookAction;
+
+	UPROPERTY(EditAnywhere, Category="Input")
+	TObjectPtr<UInputAction> BlockAction;
+
+	/*
+	 * Input Callback:
+	*/
+	void Move(const FInputActionValue& Value);
+	void Look(const FInputActionValue& Value);
+	void BlockStart(const FInputActionValue& Value);
+	void BlockEnd(const FInputActionValue& Value);
+
+	/* Movement Settings */
+	UPROPERTY(EditAnywhere, Category="Movement Settings")
+	ECharacterGate CurrentGate;
+	
+	UPROPERTY(EditAnywhere, Category="Movement Settings")
+	TMap<ECharacterGate, FCharacterData> GateSettings;
+
+private:
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<USpringArmComponent> CameraBoom;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UCameraComponent> Camera;
 };

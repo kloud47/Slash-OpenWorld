@@ -1,5 +1,12 @@
 #pragma once
 
+UENUM(BlueprintType)
+enum class ECharacterGate : uint8
+{
+	ECG_Walking UMETA(DisplayName = "Walking"),
+	ECG_Jogging UMETA(DisplayName = "Jogging"),
+};
+
 
 UENUM(BlueprintType)
 enum class ECharacterState : uint8
@@ -7,8 +14,7 @@ enum class ECharacterState : uint8
 	ECS_Unequipped UMETA(DisplayName = "Unequipped"),
 	ECS_EquippedOneHandedWeapon UMETA(DisplayName = "Equipped One-Handed Weapon"),
 	ECS_EquippedTwoHandedWeapon UMETA(DisplayName = "Equipped Two-Handed Weapon"),
-	ESC_Sprinting UMETA(DisplayName = "Sprinting"),
-	ESC_Rolling UMETA(DisplayName = "Rolling")
+	ECS_Rolling UMETA(DisplayName = "Rolling")
 };
 
 UENUM(BlueprintType)
