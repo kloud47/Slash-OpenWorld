@@ -39,6 +39,12 @@ protected:
 	UPROPERTY(EditAnywhere, Category="Input")
 	TObjectPtr<UInputAction> BlockAction;
 
+	UPROPERTY(EditAnywhere, Category="Input")
+	TObjectPtr<UInputAction> CrouchAction;
+
+	UPROPERTY(EditAnywhere, Category="Input")
+	TObjectPtr<UInputAction> DashAction;
+
 	/*
 	 * Input Callback:
 	*/
@@ -46,6 +52,8 @@ protected:
 	void Look(const FInputActionValue& Value);
 	void BlockStart(const FInputActionValue& Value);
 	void BlockEnd(const FInputActionValue& Value);
+	void Crouching(const FInputActionValue& Value);
+	void Dash(const FInputActionValue& Value);
 
 	/* Movement Settings */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Movement Settings")
@@ -54,10 +62,10 @@ protected:
 	UPROPERTY(EditAnywhere, Category="Movement Settings")
 	TMap<ECharacterGate, FCharacterData> GateSettings;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	TObjectPtr<USpringArmComponent> CameraBoom;
 private:
 	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<USpringArmComponent> CameraBoom;
-
-	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UCameraComponent> Camera;
+
 };

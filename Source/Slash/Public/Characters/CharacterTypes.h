@@ -5,6 +5,7 @@ enum class ECharacterGate : uint8
 {
 	ECG_Walking UMETA(DisplayName = "Walking"),
 	ECG_Jogging UMETA(DisplayName = "Jogging"),
+	ECG_Crouch UMETA(DisplayName = "Crouch"),
 };
 
 UENUM(BlueprintType)

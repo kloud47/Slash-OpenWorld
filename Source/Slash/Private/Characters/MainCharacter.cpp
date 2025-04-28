@@ -41,8 +41,6 @@ void AMainCharacter::BeginPlay()
 			Subsystem->AddMappingContext(MainCharaMappingContext, 0);
 		}
 	}
-
-	
 }
 
 void AMainCharacter::Move(const FInputActionValue& Value)
@@ -95,6 +93,30 @@ void AMainCharacter::BlockEnd(const FInputActionValue& Value)
 	GetCharacterMovement()->bUseSeparateBrakingFriction = GateSettings[ECharacterGate::ECG_Jogging].UseSeperateBrakingFriction;
 }
 
+void AMainCharacter::Crouching(const FInputActionValue& Value)
+{
+	UE_LOG(LogTemp, Display, TEXT("Crouched"));
+	if (CurrentGate == ECharacterGate::ECG_Walking || CurrentGate == ECharacterGate::ECG_Jogging && CanCrouch())
+	{
+		CurrentGate = ECharacterGate::ECG_Crouch;
+		Crouch();
+	}
+	else if (CurrentGate == ECharacterGate::ECG_Crouch)
+	{
+		CurrentGate = ECharacterGate::ECG_Jogging;
+		UnCrouch();
+	}
+}
+
+void AMainCharacter::Dash(const FInputActionValue& Value)
+{
+	const FRotator ControlerRotation = Controller->GetControlRotation();
+	const FRotator YawRotation(0.f, ControlerRotation.Yaw, 0.f);
+
+	const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+	AddActorWorldOffset(ForwardDirection*500, true);
+}
+
 void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -105,7 +127,8 @@ void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AMainCharacter::Look);
 		EnhancedInputComponent->BindAction(BlockAction, ETriggerEvent::Started, this, &AMainCharacter::BlockStart);
 		EnhancedInputComponent->BindAction(BlockAction, ETriggerEvent::Completed, this, &AMainCharacter::BlockEnd);
-		
+		EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Started, this, &AMainCharacter::Crouching);
+		EnhancedInputComponent->BindAction(DashAction, ETriggerEvent::Started, this, &AMainCharacter::Dash);
 	}
 }
 
