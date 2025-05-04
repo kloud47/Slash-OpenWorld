@@ -26,4 +26,10 @@ public:
 	
 	UFUNCTION(BlueprintImplementableEvent)
 	void GetCurrentGate(ECharacterGate Gate);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void GetEquippedWeapon(ECharacterStance Stance);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	float GetGroundDistance();
 };

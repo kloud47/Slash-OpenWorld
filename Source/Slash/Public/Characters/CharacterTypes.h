@@ -9,6 +9,14 @@ enum class ECharacterGate : uint8
 };
 
 UENUM(BlueprintType)
+enum class ECharacterStance : uint8
+{
+	ECS_Unarmed UMETA(DisplayName = "Unarmed"),
+	ECS_Pistol UMETA(DisplayName = "Pistol"),
+	ECS_Rifle UMETA(DisplayName = "Rifle"),
+};
+
+UENUM(BlueprintType)
 enum class ELocomotionDirection : uint8
 {
 	ELD_Forward UMETA(DisplayName = "Forward"),

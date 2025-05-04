@@ -1,10 +1,11 @@
 #include "Characters/MainCharacter.h"
-
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "Camera/CameraComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 AMainCharacter::AMainCharacter()
 {
@@ -17,6 +18,7 @@ AMainCharacter::AMainCharacter()
 	CurrentGate = ECharacterGate::ECG_Jogging;
 
 	GetCharacterMovement()->bOrientRotationToMovement = false;
+	GetCharacterMovement()->MaxWalkSpeedCrouched = 250.f;
 
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>("CameraBoom");
 	CameraBoom->SetupAttachment(GetRootComponent());
@@ -26,6 +28,35 @@ AMainCharacter::AMainCharacter()
 
 	Camera = CreateDefaultSubobject<UCameraComponent>("Camera");
 	Camera->SetupAttachment(CameraBoom);
+
+}
+
+float AMainCharacter::GetGroundDistance_Implementation()
+{
+	const FVector ActorLocation = GetActorLocation();
+    const FVector CapsuleHalfHeight(0.f, 0.f, GetCapsuleComponent()->GetScaledCapsuleHalfHeight());
+
+    const FVector StartLocation = ActorLocation - CapsuleHalfHeight;
+    const FVector EndLocation = ActorLocation - FVector(0.f, 0.f, 1000.f);
+
+    FHitResult HitResult;
+    const TArray<AActor*> ActorToIgnore;
+
+    const bool bHit = UKismetSystemLibrary::SphereTraceSingle(
+    	GetWorld(),
+    	StartLocation,
+    	EndLocation,
+    	0.f,
+    	ETraceTypeQuery::TraceTypeQuery1,
+    	false,
+    	ActorToIgnore,
+    	EDrawDebugTrace::None,
+    	HitResult,
+    	true
+    	);
+
+    if (bHit) return HitResult.Distance;
+    return 1000.f;
 }
 
 void AMainCharacter::BeginPlay()
@@ -72,12 +103,7 @@ void AMainCharacter::BlockStart(const FInputActionValue& Value)
 	CurrentGate = ECharacterGate::ECG_Walking;
 	UE_LOG(LogTemp, Display, TEXT("Walking"));
 	GetCurrentGate(ECharacterGate::ECG_Walking);
-	GetCharacterMovement()->MaxWalkSpeed = GateSettings[ECharacterGate::ECG_Walking].MaxWalkSpeed;
-	GetCharacterMovement()->MaxAcceleration = GateSettings[ECharacterGate::ECG_Walking].MaxAcceleration;
-	GetCharacterMovement()->BrakingDecelerationWalking = GateSettings[ECharacterGate::ECG_Walking].BrakingDeceleration;
-	GetCharacterMovement()->BrakingFrictionFactor = GateSettings[ECharacterGate::ECG_Walking].BrakingFrictionFactor;
-	GetCharacterMovement()->BrakingFriction = GateSettings[ECharacterGate::ECG_Walking].BrakingFriction;
-	GetCharacterMovement()->bUseSeparateBrakingFriction = GateSettings[ECharacterGate::ECG_Walking].UseSeperateBrakingFriction;
+	ChangeSpeed(CurrentGate);
 }
 
 void AMainCharacter::BlockEnd(const FInputActionValue& Value)
@@ -85,27 +111,38 @@ void AMainCharacter::BlockEnd(const FInputActionValue& Value)
 	CurrentGate = ECharacterGate::ECG_Jogging;
 	UE_LOG(LogTemp, Display, TEXT("Jogging"));
 	GetCurrentGate(ECharacterGate::ECG_Jogging);
-	GetCharacterMovement()->MaxWalkSpeed = GateSettings[ECharacterGate::ECG_Jogging].MaxWalkSpeed;
-	GetCharacterMovement()->MaxAcceleration = GateSettings[ECharacterGate::ECG_Jogging].MaxAcceleration;
-	GetCharacterMovement()->BrakingDecelerationWalking = GateSettings[ECharacterGate::ECG_Jogging].BrakingDeceleration;
-	GetCharacterMovement()->BrakingFrictionFactor = GateSettings[ECharacterGate::ECG_Jogging].BrakingFrictionFactor;
-	GetCharacterMovement()->BrakingFriction = GateSettings[ECharacterGate::ECG_Jogging].BrakingFriction;
-	GetCharacterMovement()->bUseSeparateBrakingFriction = GateSettings[ECharacterGate::ECG_Jogging].UseSeperateBrakingFriction;
+	ChangeSpeed(CurrentGate);
+}
+
+void AMainCharacter::ChangeSpeed(const ECharacterGate Gate)
+{
+	GetCharacterMovement()->MaxWalkSpeed = GateSettings[Gate].MaxWalkSpeed;
+	GetCharacterMovement()->MaxAcceleration = GateSettings[Gate].MaxAcceleration;
+	GetCharacterMovement()->BrakingDecelerationWalking = GateSettings[Gate].BrakingDeceleration;
+	GetCharacterMovement()->BrakingFrictionFactor = GateSettings[Gate].BrakingFrictionFactor;
+	GetCharacterMovement()->BrakingFriction = GateSettings[Gate].BrakingFriction;
+	GetCharacterMovement()->bUseSeparateBrakingFriction = GateSettings[Gate].UseSeperateBrakingFriction;
 }
 
 void AMainCharacter::Crouching(const FInputActionValue& Value)
 {
-	UE_LOG(LogTemp, Display, TEXT("Crouched"));
-	if (CurrentGate == ECharacterGate::ECG_Walking || CurrentGate == ECharacterGate::ECG_Jogging && CanCrouch())
+	if ((CurrentGate != ECharacterGate::ECG_Crouch) && CanCrouch() && !bIsCrouching)
 	{
+		UE_LOG(LogTemp, Display, TEXT("Crouched"));
+		bIsCrouching = true;
 		CurrentGate = ECharacterGate::ECG_Crouch;
+		GetCurrentGate(ECharacterGate::ECG_Crouch);
 		Crouch();
 	}
-	else if (CurrentGate == ECharacterGate::ECG_Crouch)
+	else if (CurrentGate == ECharacterGate::ECG_Crouch && bIsCrouching)
 	{
+		UE_LOG(LogTemp, Display, TEXT("Un-Crouched"));
+		bIsCrouching = false;
 		CurrentGate = ECharacterGate::ECG_Jogging;
+		GetCurrentGate(ECharacterGate::ECG_Jogging);
 		UnCrouch();
 	}
+	ChangeSpeed(CurrentGate);
 }
 
 void AMainCharacter::Dash(const FInputActionValue& Value)
@@ -115,6 +152,16 @@ void AMainCharacter::Dash(const FInputActionValue& Value)
 
 	const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 	AddActorWorldOffset(ForwardDirection*500, true);
+}
+
+void AMainCharacter::JumpStart(const FInputActionValue& Value)
+{
+	Jump();
+}
+
+void AMainCharacter::JumpStop(const FInputActionValue& Value)
+{
+	StopJumping();
 }
 
 void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -129,6 +176,8 @@ void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 		EnhancedInputComponent->BindAction(BlockAction, ETriggerEvent::Completed, this, &AMainCharacter::BlockEnd);
 		EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Started, this, &AMainCharacter::Crouching);
 		EnhancedInputComponent->BindAction(DashAction, ETriggerEvent::Started, this, &AMainCharacter::Dash);
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &AMainCharacter::JumpStart);
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &AMainCharacter::JumpStop);
 	}
 }
 
