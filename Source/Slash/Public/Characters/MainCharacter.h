@@ -21,15 +21,10 @@ class SLASH_API AMainCharacter : public ABaseCharacter, public ICharacterDataInt
 public:
 	AMainCharacter();
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
-	UFUNCTION(BlueprintImplementableEvent)
-	void GetCurrentGate(ECharacterGate Gate);
 	
-	UFUNCTION(BlueprintImplementableEvent)
-	void GetEquippedWeapon(ECharacterStance Stance);
-
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	float GetGroundDistance();  
+	// virtual void GetCurrentGate_Implementation(ECharacterGate Gate) override;
+	// virtual void GetEquippedWeapon_Implementation(ECharacterStance Stance) override;
+	virtual float GetGroundDistance_Implementation() override;  
 
 protected:
 	virtual void BeginPlay() override;
@@ -55,6 +50,9 @@ protected:
 	UPROPERTY(EditAnywhere, Category="Input")
 	TObjectPtr<UInputAction> JumpAction;
 
+	UPROPERTY(EditAnywhere, Category="Input")
+	TObjectPtr<UInputAction> SwitchWeaponAction;
+
 	/*
 	 * Input Callback:
 	*/
@@ -67,6 +65,7 @@ protected:
 	void Dash(const FInputActionValue& Value);
 	void JumpStart(const FInputActionValue& Value);
 	void JumpStop(const FInputActionValue& Value);
+	void SwitchWeapon(const FInputActionValue& Value);
 
 	/* Movement Settings */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Movement Settings")
@@ -74,12 +73,18 @@ protected:
 	
 	UPROPERTY(EditAnywhere, Category="Movement Settings")
 	TMap<ECharacterGate, FCharacterData> GateSettings;
+	
+	/* Get Weapon Data */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Movement Settings")
+	ECharacterStance CharacterStance = ECharacterStance::ECS_Unarmed;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	TObjectPtr<USpringArmComponent> CameraBoom;
+	
 private:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UCameraComponent> Camera;
 
 	bool bIsCrouching = false;
+
 };

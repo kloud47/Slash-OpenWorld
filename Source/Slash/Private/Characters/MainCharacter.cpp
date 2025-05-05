@@ -31,6 +31,21 @@ AMainCharacter::AMainCharacter()
 
 }
 
+void AMainCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+
+	Tags.Add(FName("SlashCharacter"));
+
+	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
+	{
+		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
+		{
+			Subsystem->AddMappingContext(MainCharaMappingContext, 0);
+		}
+	}
+}
+
 float AMainCharacter::GetGroundDistance_Implementation()
 {
 	const FVector ActorLocation = GetActorLocation();
@@ -59,21 +74,6 @@ float AMainCharacter::GetGroundDistance_Implementation()
     return 1000.f;
 }
 
-void AMainCharacter::BeginPlay()
-{
-	Super::BeginPlay();
-
-	Tags.Add(FName("SlashCharacter"));
-
-	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
-	{
-		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
-		{
-			Subsystem->AddMappingContext(MainCharaMappingContext, 0);
-		}
-	}
-}
-
 void AMainCharacter::Move(const FInputActionValue& Value)
 {
 	const FVector2D MovementVector = Value.Get<FVector2D>();
@@ -100,18 +100,24 @@ void AMainCharacter::Look(const FInputActionValue& Value)
 
 void AMainCharacter::BlockStart(const FInputActionValue& Value)
 {
-	CurrentGate = ECharacterGate::ECG_Walking;
-	UE_LOG(LogTemp, Display, TEXT("Walking"));
-	GetCurrentGate(ECharacterGate::ECG_Walking);
-	ChangeSpeed(CurrentGate);
+	if (CurrentGate != ECharacterGate::ECG_Crouch)
+	{
+		CurrentGate = ECharacterGate::ECG_Walking;
+		UE_LOG(LogTemp, Display, TEXT("Walking"));
+		Execute_GetCurrentGate(this, ECharacterGate::ECG_Walking);
+		ChangeSpeed(CurrentGate);
+	}
 }
 
 void AMainCharacter::BlockEnd(const FInputActionValue& Value)
 {
-	CurrentGate = ECharacterGate::ECG_Jogging;
-	UE_LOG(LogTemp, Display, TEXT("Jogging"));
-	GetCurrentGate(ECharacterGate::ECG_Jogging);
-	ChangeSpeed(CurrentGate);
+	if (CurrentGate != ECharacterGate::ECG_Crouch)
+	{
+		CurrentGate = ECharacterGate::ECG_Jogging;
+		UE_LOG(LogTemp, Display, TEXT("Jogging"));
+		Execute_GetCurrentGate(this, ECharacterGate::ECG_Jogging);
+		ChangeSpeed(CurrentGate);
+	}
 }
 
 void AMainCharacter::ChangeSpeed(const ECharacterGate Gate)
@@ -131,7 +137,7 @@ void AMainCharacter::Crouching(const FInputActionValue& Value)
 		UE_LOG(LogTemp, Display, TEXT("Crouched"));
 		bIsCrouching = true;
 		CurrentGate = ECharacterGate::ECG_Crouch;
-		GetCurrentGate(ECharacterGate::ECG_Crouch);
+		Execute_GetCurrentGate(this, ECharacterGate::ECG_Crouch);
 		Crouch();
 	}
 	else if (CurrentGate == ECharacterGate::ECG_Crouch && bIsCrouching)
@@ -139,7 +145,7 @@ void AMainCharacter::Crouching(const FInputActionValue& Value)
 		UE_LOG(LogTemp, Display, TEXT("Un-Crouched"));
 		bIsCrouching = false;
 		CurrentGate = ECharacterGate::ECG_Jogging;
-		GetCurrentGate(ECharacterGate::ECG_Jogging);
+		Execute_GetCurrentGate(this, ECharacterGate::ECG_Jogging);
 		UnCrouch();
 	}
 	ChangeSpeed(CurrentGate);
@@ -164,6 +170,29 @@ void AMainCharacter::JumpStop(const FInputActionValue& Value)
 	StopJumping();
 }
 
+void AMainCharacter::SwitchWeapon(const FInputActionValue& Value)
+{
+	float Axis1DValue = Value.Get<float>();
+	FString IntegerString = FString::FromInt(Axis1DValue);
+	UE_LOG(LogTemp, Warning, TEXT("Weapon -> %s"), *IntegerString)
+	
+	if ( Axis1DValue == 1.f)
+	{
+		CharacterStance = ECharacterStance::ECS_Unarmed;
+		Execute_GetEquippedWeapon(this, ECharacterStance::ECS_Unarmed);
+	}
+	else if ( Axis1DValue == 2.f)
+	{
+		CharacterStance = ECharacterStance::ECS_Pistol;
+		Execute_GetEquippedWeapon(this, ECharacterStance::ECS_Pistol);
+	}
+	else if ( Axis1DValue == 3.f)
+	{
+		CharacterStance = ECharacterStance::ECS_Rifle;
+		Execute_GetEquippedWeapon(this, ECharacterStance::ECS_Rifle);
+	}
+}
+
 void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -178,6 +207,16 @@ void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 		EnhancedInputComponent->BindAction(DashAction, ETriggerEvent::Started, this, &AMainCharacter::Dash);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &AMainCharacter::JumpStart);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &AMainCharacter::JumpStop);
+		EnhancedInputComponent->BindAction(SwitchWeaponAction, ETriggerEvent::Started, this, &AMainCharacter::SwitchWeapon);
 	}
 }
 
+// void AMainCharacter::GetCurrentGate_Implementation(ECharacterGate Gate)
+// {
+// 	ICharacterDataInterface::GetCurrentGate_Implementation(Gate);
+// }
+//
+// void AMainCharacter::GetEquippedWeapon_Implementation(ECharacterStance Stance)
+// {
+// 	ICharacterDataInterface::GetEquippedWeapon_Implementation(Stance);
+// }
