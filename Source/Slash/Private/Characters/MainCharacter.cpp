@@ -210,13 +210,3 @@ void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 		EnhancedInputComponent->BindAction(SwitchWeaponAction, ETriggerEvent::Started, this, &AMainCharacter::SwitchWeapon);
 	}
 }
-
-// void AMainCharacter::GetCurrentGate_Implementation(ECharacterGate Gate)
-// {
-// 	ICharacterDataInterface::GetCurrentGate_Implementation(Gate);
-// }
-//
-// void AMainCharacter::GetEquippedWeapon_Implementation(ECharacterStance Stance)
-// {
-// 	ICharacterDataInterface::GetEquippedWeapon_Implementation(Stance);
-// }

@@ -27,3 +27,12 @@ struct SLASH_API FCharacterData
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool UseSeperateBrakingFriction;
 };
+
+// USTRUCT(BlueprintType)
+// struct SLASH_API FSocketsData
+// {
+// 	GENERATED_BODY()
+//
+// 	FSocketsData();
+// 	
+// };

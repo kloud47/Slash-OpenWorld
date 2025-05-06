@@ -24,7 +24,9 @@ public:
 	
 	// virtual void GetCurrentGate_Implementation(ECharacterGate Gate) override;
 	// virtual void GetEquippedWeapon_Implementation(ECharacterStance Stance) override;
-	virtual float GetGroundDistance_Implementation() override;  
+	virtual float GetGroundDistance_Implementation() override;
+
+	// FTimerHandle FireTimerHandle;
 
 protected:
 	virtual void BeginPlay() override;
@@ -53,6 +55,9 @@ protected:
 	UPROPERTY(EditAnywhere, Category="Input")
 	TObjectPtr<UInputAction> SwitchWeaponAction;
 
+	// UPROPERTY(EditAnywhere, Category="Input")
+	// TObjectPtr<UInputAction> FireAction;
+
 	/*
 	 * Input Callback:
 	*/
@@ -66,6 +71,8 @@ protected:
 	void JumpStart(const FInputActionValue& Value);
 	void JumpStop(const FInputActionValue& Value);
 	void SwitchWeapon(const FInputActionValue& Value);
+	// void Fire(const FInputActionValue& Value);
+	// void FireGun();
 
 	/* Movement Settings */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Movement Settings")
@@ -81,10 +88,10 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	TObjectPtr<USpringArmComponent> CameraBoom;
 	
-private:
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	TObjectPtr<UCameraComponent> Camera;
 
+private:
 	bool bIsCrouching = false;
-
+	bool bCanFire = true;
 };
