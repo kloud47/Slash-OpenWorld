@@ -13,6 +13,6 @@ void UHealthBarComponent::SetHealthPercent(float Percent)
 	}
 	if (HealthBarWidget && HealthBarWidget->HealthBar)
 	{
-		HealthBarWidget->HealthBar->SetPercent(Percent);
+		HealthBarWidget->HealthBar->SetPercent(Percent);// Because Health bar is a Progress Bar:
 	}
 }

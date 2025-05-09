@@ -18,6 +18,36 @@ class SLASH_API AMainCharacter : public ABaseCharacter, public ICharacterDataInt
 {
 	GENERATED_BODY()
 
+	UPROPERTY(EditAnywhere, Category="Input", meta=(AllowPrivateAccess=true))
+	TObjectPtr<UInputMappingContext> MainCharaMappingContext;
+
+	UPROPERTY(EditAnywhere, Category="Input", meta=(AllowPrivateAccess=true))
+	TObjectPtr<UInputAction> MoveAction;
+
+	UPROPERTY(EditAnywhere, Category="Input", meta=(AllowPrivateAccess=true))
+	TObjectPtr<UInputAction> LookAction;
+
+	UPROPERTY(EditAnywhere, Category="Input", meta=(AllowPrivateAccess=true))
+	TObjectPtr<UInputAction> BlockAction;
+
+	UPROPERTY(EditAnywhere, Category="Input", meta=(AllowPrivateAccess=true))
+	TObjectPtr<UInputAction> CrouchAction;
+
+	UPROPERTY(EditAnywhere, Category="Input", meta=(AllowPrivateAccess=true))
+	TObjectPtr<UInputAction> DashAction;
+
+	UPROPERTY(EditAnywhere, Category="Input", meta=(AllowPrivateAccess=true))
+	TObjectPtr<UInputAction> JumpAction;
+
+	UPROPERTY(EditAnywhere, Category="Input", meta=(AllowPrivateAccess=true))
+	TObjectPtr<UInputAction> SwitchWeaponAction;
+
+	// UPROPERTY(EditAnywhere, Category="Input")
+	// TObjectPtr<UInputAction> FireAction;
+
+	UPROPERTY(EditAnywhere, Category="Input", meta=(AllowPrivateAccess=true))
+	TObjectPtr<UInputAction> InventoryAction;
+
 public:
 	AMainCharacter();
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
@@ -27,36 +57,15 @@ public:
 	virtual float GetGroundDistance_Implementation() override;
 
 	// FTimerHandle FireTimerHandle;
+	
+	UPROPERTY(BlueprintReadWrite)
+	float MoneyAmount;
 
 protected:
 	virtual void BeginPlay() override;
 
-	UPROPERTY(EditAnywhere, Category="Input")
-	TObjectPtr<UInputMappingContext> MainCharaMappingContext;
-
-	UPROPERTY(EditAnywhere, Category="Input")
-	TObjectPtr<UInputAction> MoveAction;
-
-	UPROPERTY(EditAnywhere, Category="Input")
-	TObjectPtr<UInputAction> LookAction;
-
-	UPROPERTY(EditAnywhere, Category="Input")
-	TObjectPtr<UInputAction> BlockAction;
-
-	UPROPERTY(EditAnywhere, Category="Input")
-	TObjectPtr<UInputAction> CrouchAction;
-
-	UPROPERTY(EditAnywhere, Category="Input")
-	TObjectPtr<UInputAction> DashAction;
-
-	UPROPERTY(EditAnywhere, Category="Input")
-	TObjectPtr<UInputAction> JumpAction;
-
-	UPROPERTY(EditAnywhere, Category="Input")
-	TObjectPtr<UInputAction> SwitchWeaponAction;
-
-	// UPROPERTY(EditAnywhere, Category="Input")
-	// TObjectPtr<UInputAction> FireAction;
+	UFUNCTION()
+	void BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 	/*
 	 * Input Callback:
@@ -71,6 +80,7 @@ protected:
 	void JumpStart(const FInputActionValue& Value);
 	void JumpStop(const FInputActionValue& Value);
 	void SwitchWeapon(const FInputActionValue& Value);
+	void Inventory(const FInputActionValue& Value);
 	// void Fire(const FInputActionValue& Value);
 	// void FireGun();
 

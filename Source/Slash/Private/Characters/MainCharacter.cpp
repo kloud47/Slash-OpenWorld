@@ -5,6 +5,8 @@
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "items/Money.h"
+#include "items/Data/ItemsData.h"
 #include "Kismet/KismetSystemLibrary.h"
 
 AMainCharacter::AMainCharacter()
@@ -43,6 +45,22 @@ void AMainCharacter::BeginPlay()
 		{
 			Subsystem->AddMappingContext(MainCharaMappingContext, 0);
 		}
+	}
+	
+	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &AMainCharacter::BeginOverlap);
+}
+
+void AMainCharacter::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (AMoney* MyTargetActor = CastChecked<AMoney>(OtherActor))
+	{
+		FName RowName = MyTargetActor->MoneyData.RowName;
+		
+		FMoneyData* RowData = MyTargetActor->MoneyData.GetRow<FMoneyData>(RowName.ToString());
+		MoneyAmount += RowData->Amount;
+
+		MyTargetActor->Destroy();
 	}
 }
 
@@ -193,6 +211,10 @@ void AMainCharacter::SwitchWeapon(const FInputActionValue& Value)
 	}
 }
 
+void AMainCharacter::Inventory(const FInputActionValue& Value)
+{
+}
+
 void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -208,5 +230,6 @@ void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &AMainCharacter::JumpStart);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &AMainCharacter::JumpStop);
 		EnhancedInputComponent->BindAction(SwitchWeaponAction, ETriggerEvent::Started, this, &AMainCharacter::SwitchWeapon);
+		EnhancedInputComponent->BindAction(InventoryAction, ETriggerEvent::Started, this, &AMainCharacter::Inventory);
 	}
 }
