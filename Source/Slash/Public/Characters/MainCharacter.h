@@ -4,10 +4,10 @@
 #include "BaseCharacter.h"
 #include "CharacterData.h"
 #include "CharacterTypes.h"
-#include "GameFramework/Character.h"
 #include "Interfaces/CharacterDataInterface.h"
 #include "MainCharacter.generated.h"
 
+class UInventory;
 class UInputAction;
 class USpringArmComponent;
 class UCameraComponent;
@@ -100,6 +100,11 @@ protected:
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	TObjectPtr<UCameraComponent> Camera;
+
+	TObjectPtr<UInventory> InventoryMenu;
+
+	UPROPERTY(EditDefaultsOnly, Category="UI")
+	TSubclassOf<UUserWidget> InventoryClass;
 
 private:
 	bool bIsCrouching = false;

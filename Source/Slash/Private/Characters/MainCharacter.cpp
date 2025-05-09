@@ -1,8 +1,10 @@
 #include "Characters/MainCharacter.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "Blueprint/UserWidget.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "HUD/Inventory/Inventory.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "items/Money.h"
@@ -213,6 +215,15 @@ void AMainCharacter::SwitchWeapon(const FInputActionValue& Value)
 
 void AMainCharacter::Inventory(const FInputActionValue& Value)
 {
+	if (APlayerController* PC = Cast<APlayerController>(GetController()))
+	{
+		InventoryMenu = CreateWidget<UInventory>(PC, InventoryClass);
+
+		if (InventoryMenu)
+		{
+			InventoryMenu->AddToViewport();
+		}
+	}
 }
 
 void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
