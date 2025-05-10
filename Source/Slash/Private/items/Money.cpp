@@ -6,8 +6,7 @@
 // Sets default values
 AMoney::AMoney()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 	MoneyMesh = CreateDefaultSubobject<UStaticMeshComponent>("MoneyMesh");
 	MoneyMesh->SetupAttachment(GetRootComponent());
@@ -20,12 +19,5 @@ void AMoney::BeginPlay()
 {
 	Super::BeginPlay();
 	
-}
-
-// Called every frame
-void AMoney::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
 }
 

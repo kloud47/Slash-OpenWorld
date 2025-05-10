@@ -1,10 +1,9 @@
 #include "Characters/MainCharacter.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
-#include "Blueprint/UserWidget.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
-#include "HUD/Inventory/Inventory.h"
+#include "Components/InventoryComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "items/Money.h"
@@ -33,6 +32,7 @@ AMainCharacter::AMainCharacter()
 	Camera = CreateDefaultSubobject<UCameraComponent>("Camera");
 	Camera->SetupAttachment(CameraBoom);
 
+	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>("InventoryComponent");
 }
 
 void AMainCharacter::BeginPlay()
@@ -60,7 +60,7 @@ void AMainCharacter::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AAct
 		FName RowName = MyTargetActor->MoneyData.RowName;
 		
 		FMoneyData* RowData = MyTargetActor->MoneyData.GetRow<FMoneyData>(RowName.ToString());
-		MoneyAmount += RowData->Amount;
+		InventoryComponent->MoneyAmount += RowData->Amount;
 
 		MyTargetActor->Destroy();
 	}
@@ -213,19 +213,6 @@ void AMainCharacter::SwitchWeapon(const FInputActionValue& Value)
 	}
 }
 
-void AMainCharacter::Inventory(const FInputActionValue& Value)
-{
-	if (APlayerController* PC = Cast<APlayerController>(GetController()))
-	{
-		InventoryMenu = CreateWidget<UInventory>(PC, InventoryClass);
-
-		if (InventoryMenu)
-		{
-			InventoryMenu->AddToViewport();
-		}
-	}
-}
-
 void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -241,6 +228,5 @@ void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &AMainCharacter::JumpStart);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &AMainCharacter::JumpStop);
 		EnhancedInputComponent->BindAction(SwitchWeaponAction, ETriggerEvent::Started, this, &AMainCharacter::SwitchWeapon);
-		EnhancedInputComponent->BindAction(InventoryAction, ETriggerEvent::Started, this, &AMainCharacter::Inventory);
 	}
 }

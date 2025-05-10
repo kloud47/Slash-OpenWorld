@@ -7,6 +7,7 @@
 #include "Interfaces/CharacterDataInterface.h"
 #include "MainCharacter.generated.h"
 
+class UInventoryComponent;
 class UInventory;
 class UInputAction;
 class USpringArmComponent;
@@ -45,9 +46,6 @@ class SLASH_API AMainCharacter : public ABaseCharacter, public ICharacterDataInt
 	// UPROPERTY(EditAnywhere, Category="Input")
 	// TObjectPtr<UInputAction> FireAction;
 
-	UPROPERTY(EditAnywhere, Category="Input", meta=(AllowPrivateAccess=true))
-	TObjectPtr<UInputAction> InventoryAction;
-
 public:
 	AMainCharacter();
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
@@ -57,9 +55,6 @@ public:
 	virtual float GetGroundDistance_Implementation() override;
 
 	// FTimerHandle FireTimerHandle;
-	
-	UPROPERTY(BlueprintReadWrite)
-	float MoneyAmount;
 
 protected:
 	virtual void BeginPlay() override;
@@ -80,7 +75,6 @@ protected:
 	void JumpStart(const FInputActionValue& Value);
 	void JumpStop(const FInputActionValue& Value);
 	void SwitchWeapon(const FInputActionValue& Value);
-	void Inventory(const FInputActionValue& Value);
 	// void Fire(const FInputActionValue& Value);
 	// void FireGun();
 
@@ -101,10 +95,8 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	TObjectPtr<UCameraComponent> Camera;
 
-	TObjectPtr<UInventory> InventoryMenu;
-
-	UPROPERTY(EditDefaultsOnly, Category="UI")
-	TSubclassOf<UUserWidget> InventoryClass;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	TObjectPtr<UInventoryComponent> InventoryComponent;
 
 private:
 	bool bIsCrouching = false;
