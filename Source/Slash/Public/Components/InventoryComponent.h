@@ -18,6 +18,9 @@ class SLASH_API UInventoryComponent : public UActorComponent
 	UPROPERTY(EditDefaultsOnly, Category="Input", meta=(AllowPrivateAccess = true))
 	UInputAction* InventoryAction;
 
+	UPROPERTY(EditDefaultsOnly, Category="Input", meta=(AllowPrivateAccess = true))
+	UInputAction* GrabAction;
+
 public:	
 	UInventoryComponent();
 
@@ -28,16 +31,24 @@ protected:
 	virtual void BeginPlay() override;
 
 	void OpenInventory(const FInputActionValue& Value);
+	void GrabItem(const FInputActionValue& Value);
+
+	UFUNCTION(BlueprintCallable)
+	FHitResult TraceToPickUp();
 
 	UPROPERTY(BlueprintReadWrite)
 	TObjectPtr<UInventory> InventoryMenu;
 
 	UPROPERTY(EditDefaultsOnly, Category="UI")
 	TSubclassOf<UUserWidget> InventoryClass;
+
+	UPROPERTY(BlueprintReadWrite)
+	TObjectPtr<UUserWidget> GrabWidget;
+	
+	UPROPERTY(EditDefaultsOnly, Category="UI")
+	TSubclassOf<UUserWidget> GrabWidgetClass;
 	
 
 public:	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-	
-		
 };

@@ -61,21 +61,21 @@ struct SLASH_API FItemsData : public FTableRowBase
 	TObjectPtr<UStaticMesh> Mesh;
 };
 
-USTRUCT(BlueprintType)
-struct FSlotData : public FTableRowBase
-{
-	GENERATED_BODY()
-
-	FSlotData();
-	FSlotData(FDataTableRowHandle ItemID, int32 Quantity, EItemType ItemType)
-		: ItemID(ItemID), Quantity(Quantity), ItemType(ItemType) {};
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FDataTableRowHandle ItemID;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int32 Quantity;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	EItemType ItemType;
-};
+// USTRUCT(BlueprintType)
+// struct SLASH_API FSlotData
+// {
+// 	GENERATED_BODY()
+//
+// 	FSlotData();
+// 	FSlotData(FDataTableRowHandle ItemID, int32 Quantity, EItemType ItemType)
+// 		: ItemID(ItemID), Quantity(Quantity), ItemType(ItemType) {};
+//
+// 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+// 	FDataTableRowHandle ItemID;
+//
+// 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+// 	int32 Quantity;
+//
+// 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+// 	EItemType ItemType;
+// };

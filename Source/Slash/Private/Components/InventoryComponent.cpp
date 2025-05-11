@@ -5,13 +5,13 @@
 
 #include "EnhancedInputComponent.h"
 #include "Blueprint/UserWidget.h"
+#include "Camera/CameraComponent.h"
 #include "Characters/MainCharacter.h"
 #include "HUD/Inventory/Inventory.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 UInventoryComponent::UInventoryComponent()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
 	MoneyAmount = 0;
@@ -28,7 +28,13 @@ void UInventoryComponent::BeginPlay()
 		if (UEnhancedInputComponent* Input = Cast<UEnhancedInputComponent>(Owner->InputComponent))
 		{
 			Input->BindAction(InventoryAction, ETriggerEvent::Started, this, &UInventoryComponent::OpenInventory);
+			Input->BindAction(GrabAction, ETriggerEvent::Started, this, &UInventoryComponent::GrabItem);
 		}	
+	}
+
+	if (APlayerController* PC = Cast<APlayerController>(GetOwner()->GetNetOwningPlayer()->PlayerController))
+	{
+		GrabWidget = CreateWidget<UUserWidget>(PC, GrabWidgetClass);
 	}
 }
 
@@ -62,10 +68,40 @@ void UInventoryComponent::OpenInventory(const FInputActionValue& Value)
 	}
 }
 
+void UInventoryComponent::GrabItem(const FInputActionValue& Value)
+{
+	UE_LOG(LogTemp, Display, TEXT("Grab Item"));
+}
+
+
+FHitResult UInventoryComponent::TraceToPickUp()
+{
+	const AMainCharacter* Owner = Cast<AMainCharacter>(GetOwner());
+	FVector start = Owner->Camera->GetComponentLocation();
+	FVector end = Owner->Camera->GetForwardVector();
+	end = (end * 500.f) + start;
+
+	FHitResult HitResult;
+	const TArray<AActor*> ActorToIgnore;
+	
+	const bool hit = UKismetSystemLibrary::SphereTraceSingle(
+		GetWorld(),
+		start,
+		end,
+		20.f,
+		TraceTypeQuery1,
+		false,
+		ActorToIgnore,
+		EDrawDebugTrace::ForOneFrame,
+		HitResult,
+		true
+		);
+	return HitResult;
+}
+
 
 void UInventoryComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
 }
 
