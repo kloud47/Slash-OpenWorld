@@ -17,6 +17,7 @@ class SLASH_API AMoney : public AActor
 public:	
 	// Sets default values for this actor's properties
 	AMoney();
+	virtual void Tick(float DeltaTime) override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Data")
 	FDataTableRowHandle MoneyData;
@@ -25,4 +26,10 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+private:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Rotation", meta = (AllowPrivateAccess = "true"))
+	float RotationSpeed = 45.0f; // Degrees per second
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Rotation", meta = (AllowPrivateAccess = "true"))
+	FRotator CurrentRotation;
 };

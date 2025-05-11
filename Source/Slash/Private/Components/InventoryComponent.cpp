@@ -14,7 +14,8 @@ UInventoryComponent::UInventoryComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
-	// ...
+	MoneyAmount = 0;
+	InventoryAction = nullptr;
 }
 
 
@@ -33,10 +34,9 @@ void UInventoryComponent::BeginPlay()
 
 void UInventoryComponent::OpenInventory(const FInputActionValue& Value)
 {
-	if (APlayerController* PC = Cast<APlayerController>(GetOwner()->GetNetOwningPlayer()->PlayerController)
+	UE_LOG(LogTemp, Display, TEXT("Open Inventory"));
+	if (APlayerController* PC = Cast<APlayerController>(GetOwner()->GetNetOwningPlayer()->PlayerController))
 	{
-		InventoryMenu = CreateWidget<UInventory>(PC, InventoryClass);
-
 		if (InventoryMenu)
 		{
 			PC->SetShowMouseCursor(true);
@@ -45,6 +45,19 @@ void UInventoryComponent::OpenInventory(const FInputActionValue& Value)
 			InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
 			PC->SetInputMode(InputMode);
 			InventoryMenu->AddToViewport();
+		} else
+		{
+			InventoryMenu = CreateWidget<UInventory>(PC, InventoryClass);
+			if (InventoryMenu)
+			{
+				PC->SetShowMouseCursor(true);
+				FInputModeUIOnly InputMode;
+				InputMode.SetWidgetToFocus(InventoryMenu->TakeWidget());
+				InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+				PC->SetInputMode(InputMode);
+				InventoryMenu->AddToViewport();
+			}
+			
 		}
 	}
 }

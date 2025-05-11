@@ -6,3 +6,11 @@
 FMoneyData::FMoneyData()
 {
 }
+
+FItemsData::FItemsData()
+{
+}
+
+FSlotData::FSlotData()
+{
+}

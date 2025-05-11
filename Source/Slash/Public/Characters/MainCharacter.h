@@ -13,6 +13,7 @@ class UInputAction;
 class USpringArmComponent;
 class UCameraComponent;
 class UInputMappingContext;
+class AItem;
 
 UCLASS()
 class SLASH_API AMainCharacter : public ABaseCharacter, public ICharacterDataInterface
@@ -101,4 +102,10 @@ protected:
 private:
 	bool bIsCrouching = false;
 	bool bCanFire = true;
+	
+	UPROPERTY(VisibleInstanceOnly)
+	AItem* OverlappingItem;
+
+public:
+	FORCEINLINE void SetOverlappingItem(AItem* Item) { OverlappingItem = Item; }
 };

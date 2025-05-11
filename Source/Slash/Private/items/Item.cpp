@@ -3,6 +3,7 @@
 #include "Components/SphereComponent.h"
 #include "Characters/SlashCharacter.h"
 #include "NiagaraComponent.h"
+#include "Characters/MainCharacter.h"
 
 
 // Sets default values
@@ -45,19 +46,19 @@ float AItem::TransformedCos()
 
 void AItem::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	ASlashCharacter* SlashChara = Cast<ASlashCharacter>(OtherActor);
-	if (SlashChara)
+	AMainCharacter* Chara = Cast<AMainCharacter>(OtherActor);
+	if (Chara)
 	{
-		SlashChara->SetOverlappingItem(this);
+		Chara->SetOverlappingItem(this);
 	}
 }
 
 void AItem::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	ASlashCharacter* SlashChara = Cast<ASlashCharacter>(OtherActor);
-	if (SlashChara)
+	AMainCharacter* Chara = Cast<AMainCharacter>(OtherActor);
+	if (Chara)
 	{
-		SlashChara->SetOverlappingItem(nullptr);
+		Chara->SetOverlappingItem(nullptr);
 	}
 }
 

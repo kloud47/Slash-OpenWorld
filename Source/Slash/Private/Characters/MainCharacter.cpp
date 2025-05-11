@@ -55,7 +55,7 @@ void AMainCharacter::BeginPlay()
 void AMainCharacter::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (AMoney* MyTargetActor = CastChecked<AMoney>(OtherActor))
+	if (AMoney* MyTargetActor = Cast<AMoney>(OtherActor))
 	{
 		FName RowName = MyTargetActor->MoneyData.RowName;
 		

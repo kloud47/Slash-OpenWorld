@@ -3,9 +3,9 @@
 
 #include "HUD/Inventory/Inventory.h"
 
-FReply UInventory::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent)
+void UInventory::CloseInventory(FName KeyName)
 {
-	if (InKeyEvent.GetKey() == FKey(FName("I")))
+	if (KeyName == FKey(FName("I")))
 	{
 		RemoveFromParent();
 		if (APlayerController* PC = GetOwningPlayer())
@@ -14,8 +14,5 @@ FReply UInventory::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent&
 			FInputModeGameOnly InputMode;
 			PC->SetInputMode(InputMode);
 		}
-		return FReply::Handled();
 	}
-
-	return FReply::Unhandled();
 }

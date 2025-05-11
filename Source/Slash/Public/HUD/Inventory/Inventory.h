@@ -14,5 +14,6 @@ class SLASH_API UInventory : public UUserWidget
 {
 	GENERATED_BODY()
 public:
-	virtual FReply NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent) override;
+	UFUNCTION(BlueprintCallable)
+	void CloseInventory(FName KeyName);
 };

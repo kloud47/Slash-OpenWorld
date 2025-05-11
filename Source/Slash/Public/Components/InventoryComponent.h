@@ -10,7 +10,7 @@ struct FInputActionValue;
 class UInputAction;
 class UInventory;
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS(Blueprintable)
 class SLASH_API UInventoryComponent : public UActorComponent
 {
 	GENERATED_BODY()
@@ -19,18 +19,17 @@ class SLASH_API UInventoryComponent : public UActorComponent
 	UInputAction* InventoryAction;
 
 public:	
-	// Sets default values for this component's properties
 	UInventoryComponent();
 
 	UPROPERTY(BlueprintReadWrite)
 	float MoneyAmount;
 
 protected:
-	// Called when the game starts
 	virtual void BeginPlay() override;
 
 	void OpenInventory(const FInputActionValue& Value);
 
+	UPROPERTY(BlueprintReadWrite)
 	TObjectPtr<UInventory> InventoryMenu;
 
 	UPROPERTY(EditDefaultsOnly, Category="UI")
@@ -38,7 +37,6 @@ protected:
 	
 
 public:	
-	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	
 		
