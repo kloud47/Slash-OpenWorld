@@ -63,6 +63,7 @@ void AMainCharacter::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AAct
 		InventoryComponent->MoneyAmount += RowData->Amount;
 
 		MyTargetActor->Destroy();
+		InventoryComponent->PickedUpMoney(InventoryComponent->MoneyAmount);
 	}
 }
 

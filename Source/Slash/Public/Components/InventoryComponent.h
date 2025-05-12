@@ -4,8 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "items/Data/ItemsData.h"
 #include "InventoryComponent.generated.h"
 
+class AEatable;
 struct FInputActionValue;
 class UInputAction;
 class UInventory;
@@ -21,11 +23,34 @@ class SLASH_API UInventoryComponent : public UActorComponent
 	UPROPERTY(EditDefaultsOnly, Category="Input", meta=(AllowPrivateAccess = true))
 	UInputAction* GrabAction;
 
+	UPROPERTY()
+	AEatable* OtherActor;
+
+	void AddItem(FSlotData Item , bool &bFoundExistingStack, TArray<FSlotData> &Arr, AActor* ItemActor, int32 ItemIndex, int32 ItemSize);
+	
+	int EatableSize = 0;
+	int MaxEatableSize = 7;
+	int MeleItemSize = 0;
+	int MaxMeleItemSize = 5;
+	int RangedItemSize = 0;
+	int MaxRangedItemSize = 3;
+
 public:	
 	UInventoryComponent();
 
 	UPROPERTY(BlueprintReadWrite)
 	float MoneyAmount;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FAllItemsData AllItem;
+
+	UPROPERTY(BlueprintReadOnly)
+	FSlotData CurrentItem;
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void PickedUpMoney(int Money);
+
+	
 
 protected:
 	virtual void BeginPlay() override;
@@ -34,7 +59,7 @@ protected:
 	void GrabItem(const FInputActionValue& Value);
 
 	UFUNCTION(BlueprintCallable)
-	FHitResult TraceToPickUp();
+	void TraceToPickUp();
 
 	UPROPERTY(BlueprintReadWrite)
 	TObjectPtr<UInventory> InventoryMenu;

@@ -11,6 +11,10 @@ FItemsData::FItemsData()
 {
 }
 
-// FSlotData::FSlotData()
-// {
-// }
+FSlotData::FSlotData()
+{
+}
+
+FAllItemsData::FAllItemsData()
+{
+}
