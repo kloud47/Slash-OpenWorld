@@ -40,9 +40,9 @@ void UInventoryComponent::BeginPlay()
 	}
 
 	// Setting The size of Inventory -------------------------------------------------------------------------------->
-	// AllItem.EatableItems.SetNum(MaxEatableSize);
-	// AllItem.MeleItems.SetNum(MaxMeleItemSize);
-	// AllItem.RangedItems.SetNum(MaxRangedItemSize);
+	AllItem.EatableItems.SetNum(MaxEatableSize);
+	AllItem.MeleItems.SetNum(MaxMeleItemSize);
+	AllItem.RangedItems.SetNum(MaxRangedItemSize);
 }
 
 void UInventoryComponent::OpenInventory(const FInputActionValue& Value)
@@ -85,30 +85,27 @@ void UInventoryComponent::GrabItem(const FInputActionValue& Value)
 		case EItemType::EIT_Mele :
 			{
 				UE_LOG(LogTemp, Display, TEXT("Mele Item"));
-				if (MeleItemSize != MaxMeleItemSize)
+				if (MeleItemSize < MaxMeleItemSize)
 				{
 					AddItem(CurrentItem, bFoundExistingStack, AllItem.MeleItems, OtherActor, MeleItemSize, MaxMeleItemSize);
-					MeleItemSize++;
 				}
 				break;
 			}
 		case EItemType::EIT_Ranged :
 			{
 				UE_LOG(LogTemp, Display, TEXT("Ranged Item"));
-				if (RangedItemSize != MaxRangedItemSize)
+				if (RangedItemSize < MaxRangedItemSize)
 				{
 					AddItem(CurrentItem, bFoundExistingStack, AllItem.RangedItems, OtherActor, RangedItemSize, MaxRangedItemSize);
-					RangedItemSize++;
 				}
 				break;
 			}
 		case EItemType::EIT_Eatable :
 			{
 				UE_LOG(LogTemp, Display, TEXT("Eatable Item"));
-				if (EatableSize != MaxEatableSize)
+				if (EatableSize < MaxEatableSize)
 				{
 					AddItem(CurrentItem, bFoundExistingStack, AllItem.EatableItems, OtherActor, EatableSize, MaxEatableSize);
-					EatableSize++;
 				}
 				break;
 			}
@@ -119,22 +116,36 @@ void UInventoryComponent::GrabItem(const FInputActionValue& Value)
 	}
 }
 
-void UInventoryComponent::AddItem(FSlotData Item, bool &bFoundExistingStack, TArray<FSlotData> &Arr, AActor* ItemActor, int32 ItemIndex, int32 ItemSize)
+void UInventoryComponent::AddItem(FSlotData Item, bool &bFoundExistingStack, TArray<FSlotData> &Arr, AActor* ItemActor, int32 &ItemIndex, int32 ItemSize)
 {
 	for (FSlotData& ExistingItem : Arr)
 	{
-		bool bCheckSlotSize = ((ExistingItem.Quantity + CurrentItem.Quantity) < ItemSize);
-		if (ExistingItem.ItemID.RowName == CurrentItem.ItemID.RowName && bCheckSlotSize)
+		if (ExistingItem.ItemID.RowName == Item.ItemID.RowName)
 		{
-			ExistingItem.Quantity += CurrentItem.Quantity;
-			bFoundExistingStack = true;
-			break;
+			int32 StackSize = Item.ItemID.DataTable->FindRow<FItemsData>(Item.ItemID.RowName, TEXT("Not Found Item"), true)->StackSize;
+			if ((ExistingItem.Quantity + Item.Quantity) > StackSize)
+			{
+				ExistingItem.Quantity = StackSize;
+				int32 remainingQty  = (Item.Quantity + ExistingItem.Quantity) - StackSize;
+				Item.Quantity = remainingQty;
+				Arr[ItemIndex] = Item;
+				ItemIndex++;
+				bFoundExistingStack = true;
+				break;
+			} else
+			{
+				ExistingItem.Quantity += Item.Quantity;
+				bFoundExistingStack = true;
+				break;
+			}
 		}
-		Arr.Push(CurrentItem);
 	}
 
-	if (!bFoundExistingStack) Arr.Push(CurrentItem);
-
+	if (!bFoundExistingStack)
+	{
+		Arr[ItemIndex] = Item;
+		ItemIndex++;
+	}
 	OtherActor->Destroy();
 }
 
