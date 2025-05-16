@@ -21,10 +21,8 @@ UInventoryComponent::UInventoryComponent()
 }
 
 
-void UInventoryComponent::BeginPlay()
+void UInventoryComponent::InitializeInput()
 {
-	Super::BeginPlay();
-	
 	if (AActor* Owner = Cast<AMainCharacter>(GetOwner()))
 	{
 		if (UEnhancedInputComponent* Input = Cast<UEnhancedInputComponent>(Owner->InputComponent))
@@ -33,16 +31,20 @@ void UInventoryComponent::BeginPlay()
 			Input->BindAction(GrabAction, ETriggerEvent::Started, this, &UInventoryComponent::GrabItem);
 		}	
 	}
+}
 
+void UInventoryComponent::CreateWidgets()
+{
 	if (APlayerController* PC = Cast<APlayerController>(GetOwner()->GetNetOwningPlayer()->PlayerController))
 	{
 		GrabWidget = CreateWidget<UUserWidget>(PC, GrabWidgetClass);
+		InventoryMenu = CreateWidget<UInventory>(PC, InventoryClass);
 	}
+}
 
-	// Setting The size of Inventory -------------------------------------------------------------------------------->
-	AllItem.EatableItems.SetNum(MaxEatableSize);
-	AllItem.MeleItems.SetNum(MaxMeleItemSize);
-	AllItem.RangedItems.SetNum(MaxRangedItemSize);
+void UInventoryComponent::BeginPlay()
+{
+	Super::BeginPlay();
 }
 
 void UInventoryComponent::OpenInventory(const FInputActionValue& Value)
@@ -58,20 +60,7 @@ void UInventoryComponent::OpenInventory(const FInputActionValue& Value)
 			InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
 			PC->SetInputMode(InputMode);
 			InventoryMenu->AddToViewport();
-		} else
-		{
-			InventoryMenu = CreateWidget<UInventory>(PC, InventoryClass);
-			if (InventoryMenu)
-			{
-				PC->SetShowMouseCursor(true);
-				FInputModeUIOnly InputMode;
-				InputMode.SetWidgetToFocus(InventoryMenu->TakeWidget());
-				InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
-				PC->SetInputMode(InputMode);
-				InventoryMenu->AddToViewport();
-			}
-			
-		}
+		} 
 	}
 }
 
@@ -147,6 +136,7 @@ void UInventoryComponent::AddItem(FSlotData Item, bool &bFoundExistingStack, TAr
 		ItemIndex++;
 	}
 	OtherActor->Destroy();
+	UpdateItemsInInventory();
 }
 
 
@@ -175,11 +165,13 @@ void UInventoryComponent::TraceToPickUp()
 
 	// FSlotData PrevItem = CurrentItem;
 	// && PrevItem.ItemID != CurrentItem.ItemID
-
-	if (hit && Cast<AEatable>(HitResult.GetActor()))
+	AEatable* ItemData = Cast<AEatable>(HitResult.GetActor());
+	// bool bCorrectHit = HitResult.GetActor()->IsA<AEatable>();
+	
+	if (hit && ItemData)
 	{
-		CurrentItem = Cast<AEatable>(HitResult.GetActor())->SlotData;
-		OtherActor = Cast<AEatable>(HitResult.GetActor());
+		CurrentItem = ItemData->SlotData;
+		OtherActor = ItemData;
 		GrabWidget->AddToViewport();
 	}
 	else  GrabWidget->RemoveFromParent();

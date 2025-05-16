@@ -3,6 +3,8 @@
 
 #include "HUD/Inventory/Inventory.h"
 
+#include "items/Data/ItemsData.h"
+
 void UInventory::CloseInventory(FName KeyName)
 {
 	if (KeyName == FKey(FName("I")))

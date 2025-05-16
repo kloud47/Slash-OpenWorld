@@ -38,6 +38,12 @@ class SLASH_API UInventoryComponent : public UActorComponent
 public:	
 	UInventoryComponent();
 
+	UFUNCTION(BlueprintCallable)
+	void InitializeInput();
+	
+	UFUNCTION(BlueprintCallable)
+	void CreateWidgets();
+
 	UPROPERTY(BlueprintReadWrite)
 	float MoneyAmount;
 
@@ -50,7 +56,9 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void PickedUpMoney(int Money);
 
-	
+	UFUNCTION(BlueprintImplementableEvent)
+	void UpdateItemsInInventory();
+
 
 protected:
 	virtual void BeginPlay() override;

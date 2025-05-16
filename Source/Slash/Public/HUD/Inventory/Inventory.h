@@ -6,6 +6,8 @@
 #include "Blueprint/UserWidget.h"
 #include "Inventory.generated.h"
 
+struct FSlotData;
+struct FAllItemsData;
 /**
  * 
  */
