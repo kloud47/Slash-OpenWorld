@@ -24,9 +24,9 @@ class SLASH_API UInventoryComponent : public UActorComponent
 	UInputAction* GrabAction;
 
 	UPROPERTY()
-	AEatable* OtherActor;
+	AEatable*	OtherActor;
 
-	void AddItem(FSlotData Item , bool &bFoundExistingStack, TArray<FSlotData> &Arr, AActor* ItemActor, int32 &ItemIndex, int32 ItemSize);
+	void AddItem(FSlotData Item , bool &bFoundExistingStack, TArray<FSlotData> &Arr, int32 &ItemIndex, int32 ItemSize);
 	
 	int EatableSize = 0;
 	int MaxEatableSize = 7;

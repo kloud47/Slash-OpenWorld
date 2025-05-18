@@ -76,7 +76,7 @@ void UInventoryComponent::GrabItem(const FInputActionValue& Value)
 				UE_LOG(LogTemp, Display, TEXT("Mele Item"));
 				if (MeleItemSize < MaxMeleItemSize)
 				{
-					AddItem(CurrentItem, bFoundExistingStack, AllItem.MeleItems, OtherActor, MeleItemSize, MaxMeleItemSize);
+					AddItem(CurrentItem, bFoundExistingStack, AllItem.MeleItems, MeleItemSize, MaxMeleItemSize);
 				}
 				break;
 			}
@@ -85,7 +85,7 @@ void UInventoryComponent::GrabItem(const FInputActionValue& Value)
 				UE_LOG(LogTemp, Display, TEXT("Ranged Item"));
 				if (RangedItemSize < MaxRangedItemSize)
 				{
-					AddItem(CurrentItem, bFoundExistingStack, AllItem.RangedItems, OtherActor, RangedItemSize, MaxRangedItemSize);
+					AddItem(CurrentItem, bFoundExistingStack, AllItem.RangedItems, RangedItemSize, MaxRangedItemSize);
 				}
 				break;
 			}
@@ -94,7 +94,7 @@ void UInventoryComponent::GrabItem(const FInputActionValue& Value)
 				UE_LOG(LogTemp, Display, TEXT("Eatable Item"));
 				if (EatableSize < MaxEatableSize)
 				{
-					AddItem(CurrentItem, bFoundExistingStack, AllItem.EatableItems, OtherActor, EatableSize, MaxEatableSize);
+					AddItem(CurrentItem, bFoundExistingStack, AllItem.EatableItems, EatableSize, MaxEatableSize);
 				}
 				break;
 			}
@@ -105,7 +105,7 @@ void UInventoryComponent::GrabItem(const FInputActionValue& Value)
 	}
 }
 
-void UInventoryComponent::AddItem(FSlotData Item, bool &bFoundExistingStack, TArray<FSlotData> &Arr, AActor* ItemActor, int32 &ItemIndex, int32 ItemSize)
+void UInventoryComponent::AddItem(FSlotData Item, bool &bFoundExistingStack, TArray<FSlotData> &Arr, int32 &ItemIndex, int32 ItemSize)
 {
 	for (FSlotData& ExistingItem : Arr)
 	{
