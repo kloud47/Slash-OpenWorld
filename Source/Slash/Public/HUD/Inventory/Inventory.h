@@ -17,5 +17,5 @@ class SLASH_API UInventory : public UUserWidget
 	GENERATED_BODY()
 public:
 	UFUNCTION(BlueprintCallable)
-	void CloseInventory(FName KeyName);
+	void CloseInventory();
 };

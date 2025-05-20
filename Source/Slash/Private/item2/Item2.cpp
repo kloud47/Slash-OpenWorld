@@ -3,22 +3,28 @@
 
 #include "item2/Item2.h"
 
-// Sets default values
+#include "NiagaraComponent.h"
+#include "Components/SphereComponent.h"
+
+
 AItem2::AItem2()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	ItemSKMesh = CreateDefaultSubobject<USkeletalMeshComponent>("ItemSkeletalMesh");
+	RootComponent = ItemSKMesh;
+	Sphere->SetupAttachment(ItemSKMesh);
+	EmbersEffect->SetupAttachment(ItemSKMesh);
+
+	ItemMesh = nullptr;
 }
 
-// Called when the game starts or when spawned
 void AItem2::BeginPlay()
 {
 	Super::BeginPlay();
 	
 }
 
-// Called every frame
 void AItem2::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);

@@ -4,23 +4,24 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "items/Item.h"
+#include "items/ItemTypes.h"
 #include "Item2.generated.h"
 
+class USphereComponent;
+
 UCLASS()
-class SLASH_API AItem2 : public AActor
+class SLASH_API AItem2 : public AItem
 {
 	GENERATED_BODY()
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	USkeletalMeshComponent* ItemSKMesh;
 	
 public:	
-	// Sets default values for this actor's properties
 	AItem2();
-
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-public:	
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+protected:
+	virtual void BeginPlay() override;
 };

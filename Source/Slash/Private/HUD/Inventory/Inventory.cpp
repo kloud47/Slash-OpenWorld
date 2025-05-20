@@ -3,18 +3,14 @@
 
 #include "HUD/Inventory/Inventory.h"
 
-#include "items/Data/ItemsData.h"
 
-void UInventory::CloseInventory(FName KeyName)
+void UInventory::CloseInventory()
 {
-	if (KeyName == FKey(FName("I")))
+	RemoveFromParent();
+	if (APlayerController* PC = GetOwningPlayer())
 	{
-		RemoveFromParent();
-		if (APlayerController* PC = GetOwningPlayer())
-		{
-			PC->SetShowMouseCursor(false);
-			FInputModeGameOnly InputMode;
-			PC->SetInputMode(InputMode);
-		}
+		PC->SetShowMouseCursor(false);
+		FInputModeGameOnly InputMode;
+		PC->SetInputMode(InputMode);
 	}
 }

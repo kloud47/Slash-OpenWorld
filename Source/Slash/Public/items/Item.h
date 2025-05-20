@@ -14,8 +14,6 @@ class SLASH_API AItem : public AActor
 	GENERATED_BODY()// helps in initializinig c++project with UE5 engine :)
 	
 public:	
-	// Sets default values for this actor's properties
-	// Called every frame
 	AItem();
 	virtual void Tick(float DeltaTime) override;
 
@@ -23,7 +21,6 @@ public:
 	USphereComponent* Sphere;
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Sine params")

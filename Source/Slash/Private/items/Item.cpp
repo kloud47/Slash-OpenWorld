@@ -4,8 +4,6 @@
 #include "Characters/MainCharacter.h"
 
 
-// Sets default values
-// This is a default constructor of header file
 AItem::AItem()
 {
 	PrimaryActorTick.bCanEverTick = true;// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
@@ -22,7 +20,6 @@ AItem::AItem()
 	EmbersEffect->SetupAttachment(GetRootComponent());
 }
 
-// Called when the game starts or when spawned
 void AItem::BeginPlay()
 {
 	Super::BeginPlay();
@@ -60,7 +57,6 @@ void AItem::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor*
 	}
 }
 
-// Called every frame
 void AItem::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);

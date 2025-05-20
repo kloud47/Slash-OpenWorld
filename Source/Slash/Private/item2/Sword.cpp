@@ -1,36 +1,38 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "items/Weapons/Weapon.h"
-#include "Kismet/GameplayStatics.h"
-#include "Components/SphereComponent.h"
-#include "Components/BoxComponent.h"
-#include "Kismet/KismetSystemLibrary.h"
-#include "Interfaces//HitInterface.h"
-#include "NiagaraComponent.h"
+#include "item2/Sword.h"
 
-AWeapon::AWeapon()
+#include "NiagaraComponent.h"
+#include "Components/BoxComponent.h"
+#include "Components/SphereComponent.h"
+#include "Interfaces/HitInterface.h"
+#include "Kismet/GameplayStatics.h"
+
+ASword::ASword()
 {
 	WeaponBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Weapon Box"));
-	WeaponBox->SetupAttachment(GetRootComponent());
-	WeaponBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	WeaponBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
-	WeaponBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
+    WeaponBox->SetupAttachment(GetRootComponent());
+    WeaponBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    WeaponBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
+    WeaponBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
 
-	BoxTraceStart = CreateDefaultSubobject<USceneComponent>(TEXT("Box Trace Start"));
-	BoxTraceStart->SetupAttachment(GetRootComponent());
-	BoxTraceEnd = CreateDefaultSubobject<USceneComponent>(TEXT("Box Trace End"));
-	BoxTraceEnd->SetupAttachment(GetRootComponent());
+    BoxTraceStart = CreateDefaultSubobject<USceneComponent>(TEXT("Box Trace Start"));
+    BoxTraceStart->SetupAttachment(GetRootComponent());
+    BoxTraceEnd = CreateDefaultSubobject<USceneComponent>(TEXT("Box Trace End"));
+    BoxTraceEnd->SetupAttachment(GetRootComponent());
 }
 
-void AWeapon::BeginPlay()
+void ASword::BeginPlay()
 {
 	Super::BeginPlay();
 
-	WeaponBox->OnComponentBeginOverlap.AddDynamic(this, &AWeapon::OnBoxOverlap);
+	Super::BeginPlay();
+
+	WeaponBox->OnComponentBeginOverlap.AddDynamic(this, &ASword::OnBoxOverlap);
 }
 
-void AWeapon::Equip(USceneComponent* InParent, FName InSocketName, AActor* NewOwner, APawn* NewInstigator)
+void ASword::Equip(USceneComponent* InParent, FName InSocketName, AActor* NewOwner, APawn* NewInstigator)
 {
 	ItemState = EItemState::EIS_Equipped;
 	SetOwner(NewOwner);
@@ -41,7 +43,7 @@ void AWeapon::Equip(USceneComponent* InParent, FName InSocketName, AActor* NewOw
 	DeactivateEmbers();
 }
 
-void AWeapon::DeactivateEmbers()
+void ASword::DeactivateEmbers()
 {
 	if (EmbersEffect)
 	{
@@ -49,7 +51,7 @@ void AWeapon::DeactivateEmbers()
 	}
 }
 
-void AWeapon::DisableSphereCollision()
+void ASword::DisableSphereCollision()
 {
 	if (Sphere)
 	{
@@ -57,7 +59,7 @@ void AWeapon::DisableSphereCollision()
 	}
 }
 
-void AWeapon::PlayEquipSound()
+void ASword::PlayEquipSound()
 {
 	if (EquipSound)
 	{
@@ -69,13 +71,13 @@ void AWeapon::PlayEquipSound()
 	}
 }
 
-void AWeapon::AttachMeshToSocket(USceneComponent* InParent, const FName& InSocketName)
+void ASword::AttachMeshToSocket(USceneComponent* InParent, const FName& InSocketName)
 {
 	FAttachmentTransformRules TransformRules(EAttachmentRule::SnapToTarget, true);
 	ItemMesh->AttachToComponent(InParent, TransformRules, InSocketName);
 }
 
-void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void ASword::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (IgnoreSameTypeActor(OtherActor)) return;
 
@@ -99,12 +101,12 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 	}
 }
 
-bool AWeapon::IgnoreSameTypeActor(AActor* OtherActor)
+bool ASword::IgnoreSameTypeActor(AActor* OtherActor)
 {
 	return GetOwner()->ActorHasTag(FName("Enemy")) && OtherActor->ActorHasTag(FName("Enemy"));
 }
 
-void AWeapon::ExecuteGetHit(FHitResult& BoxHit)
+void ASword::ExecuteGetHit(FHitResult& BoxHit)
 {
 	// check if the actor implements a hit interface:
 	IHitInterface* CheckHitInterface = Cast<IHitInterface>(BoxHit.GetActor());
@@ -115,7 +117,7 @@ void AWeapon::ExecuteGetHit(FHitResult& BoxHit)
 	}
 }
 
-void AWeapon::BoxTrace(FHitResult& BoxHit)
+void ASword::BoxTrace(FHitResult& BoxHit)
 {
 	const FVector Start = BoxTraceStart->GetComponentLocation();
 	const FVector End = BoxTraceEnd->GetComponentLocation();
